@@ -34,8 +34,6 @@ class NewsRepository(
                 localProvider.insertData(data = data.map { NewsLocal(0, it.text) })
             } catch (e: Throwable) {
                 emit(Result.Error(Throwable(message = e.message)))
-            } catch (e: Error) {
-                emit(Result.Error(Throwable(message = "Что-то пошло не так")))
             }
         }
     }
@@ -47,8 +45,6 @@ class NewsRepository(
                 emit(Result.Success(data))
             } catch (e: Throwable) {
                 emit(Result.Error(Throwable(message = e.message)))
-            } catch (e: Error) {
-                emit(Result.Error(Throwable(message = "Что-то пошло не так")))
             }
         }
     }

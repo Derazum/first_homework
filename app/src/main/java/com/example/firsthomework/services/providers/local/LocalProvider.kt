@@ -21,11 +21,11 @@ class LocalProvider(
 
     override suspend fun insertData(data: List<NewsLocal>) {
         try{
-            for (i in 0..data.size) {
+            for (i in 0 until (data.size - 1)) {
                 newsDao.insert(data[i])
             }
         } catch (e: Throwable) {
-        } catch (e: Error) {
+            throw e
         }
     }
 
