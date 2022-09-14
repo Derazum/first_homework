@@ -29,11 +29,11 @@ class NewsViewModel(
         viewModelScope.launch {
             _state.emit(NewsState.Loading)
             repository.getNews().collect {
-                it.doOnSuccess {
-                        news -> _state.emit(NewsState.Content(news = news))
+                it.doOnSuccess { news ->
+                    _state.emit(NewsState.Content(news = news))
                 }
-                it.doOnError {
-                        error -> _state.emit(NewsState.Error(error))
+                it.doOnError { error ->
+                    _state.emit(NewsState.Error(error))
                 }
             }
         }
@@ -43,11 +43,11 @@ class NewsViewModel(
         viewModelScope.launch {
             _state.emit(NewsState.Loading)
             repository.getNewNews().collect {
-                it.doOnSuccess {
-                        news -> _state.emit(NewsState.Content(news = news))
+                it.doOnSuccess { news ->
+                    _state.emit(NewsState.Content(news = news))
                 }
-                it.doOnError {
-                        error -> _state.emit(NewsState.Error(error))
+                it.doOnError { error ->
+                    _state.emit(NewsState.Error(error))
                 }
             }
         }
@@ -55,7 +55,7 @@ class NewsViewModel(
 }
 
 sealed class NewsState {
-    object Loading: NewsState()
-    data class Error(val throwable: Throwable): NewsState()
-    data class Content(val news: List<News>): NewsState()
+    object Loading : NewsState()
+    data class Error(val throwable: Throwable) : NewsState()
+    data class Content(val news: List<News>) : NewsState()
 }

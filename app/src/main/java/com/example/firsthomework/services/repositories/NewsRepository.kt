@@ -6,6 +6,8 @@ import com.example.firsthomework.services.entities.toDomain
 import com.example.firsthomework.services.providers.local.ILocalProvider
 import com.example.firsthomework.services.providers.remote.IRemoteDataProvider
 import com.example.firsthomework.services.utils.Result
+import com.example.firsthomework.services.utils.doOnError
+import com.example.firsthomework.services.utils.doOnSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -15,7 +17,7 @@ class NewsRepository(
 ) {
 
     suspend fun getNews(): Flow<Result<List<News>, Throwable>> {
-        return if(localProvider.hasLocalData()) {
+        return if (localProvider.hasLocalData()) {
             getLocalNews()
         } else {
             getRemoteNews()
@@ -28,24 +30,29 @@ class NewsRepository(
 
     private suspend fun getRemoteNews(): Flow<Result<List<News>, Throwable>> {
         return flow {
-            try {
-                val data = remoteDataProvider.getData().map { it.toDomain() }
-                emit(Result.Success(data))
-                localProvider.insertData(data = data.map { NewsLocal(0, it.text) })
-            } catch (e: Throwable) {
-                emit(Result.Error(Throwable(message = e.message)))
-            }
+            remoteDataProvider.getData()
+                .doOnSuccess { result ->
+                    val data = result.map { it.toDomain() }
+                    emit(Result.Success(data))
+                    localProvider.insertData(data = data.map { NewsLocal(0, it.text) })
+                        .doOnSuccess { }.doOnError { }
+                }
+                .doOnError {
+                    emit(Result.Error(Throwable(message = it.message)))
+                }
         }
     }
 
     private suspend fun getLocalNews(): Flow<Result<List<News>, Throwable>> {
         return flow {
-            try {
-                val data = localProvider.getData().map { it.toDomain() }
-                emit(Result.Success(data))
-            } catch (e: Throwable) {
-                emit(Result.Error(Throwable(message = e.message)))
-            }
+            localProvider.getData()
+                .doOnSuccess { result ->
+                    val data = result.map { it.toDomain() }
+                    emit(Result.Success(data))
+                }
+                .doOnError {
+                    emit(Result.Error(Throwable(message = it.message)))
+                }
         }
     }
 

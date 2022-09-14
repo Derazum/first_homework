@@ -13,6 +13,6 @@ data class NewsLocal(
     var id: Int = 0,
     @ColumnInfo(name = "newsText")
     val text: String
-    )
+)
 
 fun NewsLocal.toDomain() = News(this.text)

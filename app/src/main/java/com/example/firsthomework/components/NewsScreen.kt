@@ -1,6 +1,8 @@
 package com.example.firsthomework.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -18,7 +20,6 @@ import com.example.firsthomework.view_models.NewsViewModel
 @Composable
 fun NewsScreen(viewModel: NewsViewModel) {
     val state = viewModel.state.collectAsState()
-    val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize()) {
         when (state.value) {
             is NewsState.Loading -> {
@@ -47,22 +48,23 @@ fun NewsScreen(viewModel: NewsViewModel) {
             }
             is NewsState.Content -> {
                 val news = (state.value as NewsState.Content).news
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .wrapContentSize()
-                        .verticalScroll(scrollState)
                         .align(Alignment.Center),
                 ) {
-                    for (i in news) {
+                    items(news) { item ->
                         Text(
-                            text = i.text,
+                            text = item.text,
                             textAlign = TextAlign.Center
                         )
                     }
-                    Button(
-                        onClick = { viewModel.refresh() },
-                    ) {
-                        Text("Загрузить Новые")
+                    item {
+                        Button(
+                            onClick = { viewModel.refresh() },
+                        ) {
+                            Text("Загрузить Новые")
+                        }
                     }
                 }
 
